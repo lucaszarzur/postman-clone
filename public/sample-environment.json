@@ -1,0 +1,26 @@
+{
+  "id": "sample-environment-123",
+  "name": "Sample Environment",
+  "values": [
+    {
+      "key": "userId",
+      "value": "1",
+      "enabled": true
+    },
+    {
+      "key": "postId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "createdPostId",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com",
+      "enabled": true
+    }
+  ]
+}

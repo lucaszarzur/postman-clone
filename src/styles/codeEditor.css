@@ -1,0 +1,281 @@
+/* Estilos para o editor de código */
+.code-editor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: #ffffff;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+/* Estilos para o editor de código simples */
+.code-editor-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.375rem;
+}
+
+.code-editor-textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1e293b;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  outline: none;
+  tab-size: 2;
+}
+
+.code-editor-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+/* Estilos para o placeholder */
+.code-editor-textarea::placeholder {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+/* Estilos para a barra de rolagem */
+.code-editor-textarea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-editor-textarea::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.code-editor-textarea::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.code-editor-textarea::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Estilos para seleção de texto */
+.code-editor-textarea::selection {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Estilos para o editor Prism */
+.prism-code-editor {
+  position: relative;
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.prism-code-editor:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+.prism-code-textarea,
+.prism-code-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  margin: 0;
+  border: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  tab-size: 2;
+  white-space: pre;
+  overflow: auto;
+}
+
+.prism-code-textarea {
+  color: transparent;
+  background: transparent;
+  caret-color: #1e293b;
+  resize: none;
+  outline: none;
+  z-index: 2;
+}
+
+.prism-code-preview {
+  pointer-events: none;
+  z-index: 1;
+  background-color: #ffffff;
+}
+
+.prism-code-preview .placeholder {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+/* Estilos para a barra de rolagem do Prism */
+.prism-code-textarea::-webkit-scrollbar,
+.prism-code-preview::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.prism-code-textarea::-webkit-scrollbar-track,
+.prism-code-preview::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.prism-code-textarea::-webkit-scrollbar-thumb,
+.prism-code-preview::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.prism-code-textarea::-webkit-scrollbar-thumb:hover,
+.prism-code-preview::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Estilos específicos para o editor JSON */
+.json-editor {
+  position: relative;
+}
+
+.json-editor .prism-code-preview.json-invalid {
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.json-editor textarea[data-valid-json="false"] {
+  caret-color: #ef4444;
+}
+
+.json-error-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  background-color: #ffffff;
+  border-radius: 50%;
+  z-index: 3;
+  cursor: help;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.json-format-button {
+  position: absolute;
+  bottom: 10px;
+  right: 40px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  background-color: #ffffff;
+  border-radius: 4px;
+  z-index: 3;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.json-format-button:hover {
+  color: #3b82f6;
+  background-color: #f1f5f9;
+}
+
+/* Estilos para tokens JavaScript */
+.cm-keyword {
+  color: #8954A8;
+  font-weight: bold;
+}
+
+.cm-operator {
+  color: #5C6BC0;
+}
+
+.cm-string {
+  color: #2E7D32;
+}
+
+.cm-number {
+  color: #E67C73;
+}
+
+.cm-comment {
+  color: #9E9E9E;
+  font-style: italic;
+}
+
+.cm-variableName {
+  color: #2196F3;
+}
+
+.cm-propertyName {
+  color: #0288D1;
+}
+
+.cm-typeName {
+  color: #D81B60;
+}
+
+.cm-function {
+  color: #F57C00;
+}
+
+.cm-punctuation {
+  color: #616161;
+}
+
+/* Estilos para o tema geral */
+.cm-gutters {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: none;
+  border-right: 1px solid #e2e8f0;
+}
+
+.cm-activeLineGutter {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.cm-activeLine {
+  background-color: #f1f5f9;
+}
+
+.cm-selectionMatch {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.cm-cursor {
+  border-left: 2px solid #3b82f6;
+}
+
+.cm-focused {
+  outline: none;
+}
+
+.cm-content {
+  caret-color: #3b82f6;
+}
+
+/* Estilos para o placeholder */
+.cm-placeholder {
+  color: #94a3b8;
+  font-style: italic;
+}

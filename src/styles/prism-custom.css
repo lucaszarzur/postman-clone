@@ -1,0 +1,98 @@
+/**
+ * Estilos personalizados para o Prism.js
+ * Cores inspiradas no tema do Postman
+ */
+
+/* Tokens básicos */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #9E9E9E;
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: #616161;
+}
+
+/* Palavras-chave */
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: #E67C73;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #2E7D32;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #5C6BC0;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #8954A8;
+  font-weight: bold;
+}
+
+.token.function,
+.token.class-name {
+  color: #F57C00;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #2196F3;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+/* Linha de código */
+pre[class*="language-"] {
+  padding: 0;
+  margin: 0;
+  overflow: auto;
+  background: transparent;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #1e293b;
+  background: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 14px;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  tab-size: 2;
+  hyphens: none;
+}

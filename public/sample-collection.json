@@ -1,0 +1,271 @@
+{
+  "info": {
+    "_postman_id": "sample-collection-123",
+    "name": "Sample API Collection",
+    "description": "A sample collection for testing Postman Clone",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Requests",
+      "item": [
+        {
+          "name": "Get User Data",
+          "id": "get-user-data-123",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://jsonplaceholder.typicode.com/users/{{userId}}",
+              "protocol": "https",
+              "host": [
+                "jsonplaceholder",
+                "typicode",
+                "com"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            },
+            "description": "Get user data by ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has correct user ID\", function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id.toString()).to.equal(pm.variables.get(\"userId\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Posts",
+          "id": "get-posts-123",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://jsonplaceholder.typicode.com/posts?userId={{userId}}",
+              "protocol": "https",
+              "host": [
+                "jsonplaceholder",
+                "typicode",
+                "com"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Get posts by user ID"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(Array.isArray(jsonData)).to.be.true;",
+                  "});",
+                  "",
+                  "// Store the first post ID for later use",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.length > 0) {",
+                  "    pm.environment.set(\"postId\", jsonData[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "POST Requests",
+      "item": [
+        {
+          "name": "Create Post",
+          "id": "create-post-123",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": {{userId}},\n    \"title\": \"New Post Title\",\n    \"body\": \"This is the body of the new post created with Postman Clone.\"\n}"
+            },
+            "url": {
+              "raw": "https://jsonplaceholder.typicode.com/posts",
+              "protocol": "https",
+              "host": [
+                "jsonplaceholder",
+                "typicode",
+                "com"
+              ],
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Create a new post"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has ID\", function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    // Store the created post ID",
+                  "    pm.environment.set(\"createdPostId\", jsonData.id);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// You can set variables or perform actions before the request is sent",
+                  "console.log(\"About to create a new post for user ID: \" + pm.variables.get(\"userId\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PUT Requests",
+      "item": [
+        {
+          "name": "Update Post",
+          "id": "update-post-123",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": {{userId}},\n    \"id\": {{postId}},\n    \"title\": \"Updated Post Title\",\n    \"body\": \"This post has been updated with Postman Clone.\"\n}"
+            },
+            "url": {
+              "raw": "https://jsonplaceholder.typicode.com/posts/{{postId}}",
+              "protocol": "https",
+              "host": [
+                "jsonplaceholder",
+                "typicode",
+                "com"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ]
+            },
+            "description": "Update an existing post"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Title has been updated\", function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.title).to.equal(\"Updated Post Title\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DELETE Requests",
+      "item": [
+        {
+          "name": "Delete Post",
+          "id": "delete-post-123",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://jsonplaceholder.typicode.com/posts/{{postId}}",
+              "protocol": "https",
+              "host": [
+                "jsonplaceholder",
+                "typicode",
+                "com"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ]
+            },
+            "description": "Delete a post"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Clean up environment variables",
+                  "pm.test(\"Clean up environment variables\", function() {",
+                  "    pm.environment.unset(\"postId\");",
+                  "    pm.environment.unset(\"createdPostId\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
