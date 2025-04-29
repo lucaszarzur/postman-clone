@@ -9,6 +9,7 @@ import { useResponsePopup } from '../../contexts/ResponsePopupContext';
 import PrismCodeEditor from '../common/PrismCodeEditor';
 import JsonEditor from '../common/JsonEditor';
 import AuthSettings from './AuthSettings';
+import GlobalAuthSettings from '../Auth/GlobalAuthSettings';
 import HighlightedText from '../common/HighlightedText';
 
 const RequestEditor = () => {
@@ -727,10 +728,13 @@ const RequestEditor = () => {
         )}
 
         {activeTab === 'auth' && (
-          <AuthSettings
-            url={url}
-            onAuthChange={setAuth}
-          />
+          <div className="space-y-4">
+            <GlobalAuthSettings />
+            <AuthSettings
+              url={url}
+              onAuthChange={setAuth}
+            />
+          </div>
         )}
       </div>
     </div>

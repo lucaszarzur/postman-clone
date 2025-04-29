@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useCollection } from '../../hooks/useCollection';
+import RequestEditModal from './RequestEditModal';
 
 const CollectionList = () => {
-  const { collections, selectCollection, removeCollection, activeCollection, activeRequest, selectRequest } = useCollection();
+  const { collections, selectCollection, removeCollection, activeCollection, activeRequest, selectRequest, updateRequest } = useCollection();
   const [expandedCollections, setExpandedCollections] = useState({});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [requestToEdit, setRequestToEdit] = useState(null);
+  const [editCollectionId, setEditCollectionId] = useState(null);
 
   const toggleCollectionExpand = (collectionId) => {
     setExpandedCollections(prev => ({
@@ -122,8 +126,30 @@ const CollectionList = () => {
     selectRequest(requestId, validRequest);
   };
 
+  // Open the edit modal for a request
+  const handleEditRequest = (e, request, collectionId) => {
+    e.stopPropagation(); // Prevent request selection
+    setRequestToEdit(request);
+    setEditCollectionId(collectionId);
+    setIsEditModalOpen(true);
+  };
+
+  // Handle saving edited request
+  const handleSaveRequest = (updatedRequest) => {
+    if (!editCollectionId || !requestToEdit) return;
+
+    const requestId = requestToEdit.id || `${requestToEdit.name}-${Date.now()}`;
+    const success = updateRequest(editCollectionId, requestId, updatedRequest);
+
+    if (success) {
+      console.log('Request updated successfully');
+    } else {
+      console.error('Failed to update request');
+    }
+  };
+
   // Recursive function to render collection items
-  const renderItems = (items, path = []) => {
+  const renderItems = (items, path = [], collectionId) => {
     return (
       <ul className="pl-4 mt-1 space-y-1">
         {items.map(item => {
@@ -148,18 +174,32 @@ const CollectionList = () => {
                     <span className="font-medium">{item.name}</span>
                   </div>
 
-                  {expandedCollections[item.id || item.name] && renderItems(item.item, itemPath)}
+                  {expandedCollections[item.id || item.name] && renderItems(item.item, itemPath, collectionId)}
                 </div>
               ) : (
                 <div
-                  className={`py-1 px-2 pl-6 hover:bg-gray-100 rounded cursor-pointer flex items-center
+                  className={`py-1 px-2 pl-6 hover:bg-gray-100 rounded cursor-pointer flex items-center justify-between
                             ${isActive ? 'bg-blue-100 text-blue-700' : ''}`}
-                  onClick={() => handleSelectRequest(item)}
                 >
-                  <span className={`text-xs font-bold mr-2 px-1.5 py-0.5 rounded ${getMethodBgColor(item.request?.method || 'GET')}`}>
-                    {(item.request?.method || 'GET').toUpperCase()}
-                  </span>
-                  {item.name}
+                  <div
+                    className="flex items-center flex-grow"
+                    onClick={() => handleSelectRequest(item)}
+                  >
+                    <span className={`text-xs font-bold mr-2 px-1.5 py-0.5 rounded ${getMethodBgColor(item.request?.method || 'GET')}`}>
+                      {(item.request?.method || 'GET').toUpperCase()}
+                    </span>
+                    <span className="truncate">{item.name}</span>
+                  </div>
+
+                  <button
+                    onClick={(e) => handleEditRequest(e, item, collectionId)}
+                    className="text-gray-400 hover:text-blue-500 ml-2 p-1"
+                    title="Edit request"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
                 </div>
               )}
             </li>
@@ -243,12 +283,21 @@ const CollectionList = () => {
 
             {expandedCollections[collection.info._postman_id] && (
               <div className="p-2 border-t border-gray-100">
-                {renderItems(collection.item, [collection.info.name])}
+                {renderItems(collection.item, [collection.info.name], collection.info._postman_id)}
               </div>
             )}
           </li>
         ))}
       </ul>
+
+      {/* Edit Request Modal */}
+      <RequestEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        request={requestToEdit}
+        collectionId={editCollectionId}
+        onSave={handleSaveRequest}
+      />
     </div>
   );
 };

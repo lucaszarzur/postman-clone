@@ -37,7 +37,21 @@ export const proxyUrl = (url) => {
     // Para URLs completas, adiciona o prefixo /api-gateway
     // Mantém o caminho e a query string
     const apiPath = `/api-gateway${urlObj.pathname}${urlObj.search || ''}`;
+
+    // Log detalhado da conversão de URL
     console.log('Convertendo URL para proxy:', url, '->', apiPath);
+    console.log('Detalhes da URL original:', {
+      protocol: urlObj.protocol,
+      hostname: urlObj.hostname,
+      pathname: urlObj.pathname,
+      search: urlObj.search || '[nenhum]'
+    });
+
+    // Verificar se a URL contém duplicação de /api-gateway
+    if (urlObj.pathname.includes('/api-gateway')) {
+      console.warn('ATENÇÃO: URL já contém /api-gateway, pode causar duplicação:', urlObj.pathname);
+    }
+
     return apiPath;
   } catch (error) {
     console.error('Erro ao processar URL para proxy:', error);

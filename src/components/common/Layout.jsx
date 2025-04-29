@@ -9,10 +9,12 @@ import ResponseViewer from '../Response/ResponseViewer';
 import ConsoleViewer from '../Console/ConsoleViewer';
 import ConsoleToggle from '../Console/ConsoleToggle';
 import Welcome from './Welcome';
+import TestPage from '../Test/TestPage';
 
 const Layout = () => {
   const [sidebarTab, setSidebarTab] = useState('collections');
   const [showResponse, setShowResponse] = useState(true);
+  const [activeView, setActiveView] = useState('request'); // 'request' or 'test'
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -81,46 +83,78 @@ const Layout = () => {
 
       {/* Main content */}
       <div className="flex-grow flex flex-col">
-        {/* Environment selector */}
-        <div className="p-4 border-b border-gray-200 bg-white">
+        {/* Environment selector and view toggle */}
+        <div className="p-4 border-b border-gray-200 bg-white flex justify-between items-center">
           <EnvironmentSelector />
+
+          <div className="flex border border-gray-300 rounded-md overflow-hidden">
+            <button
+              onClick={() => setActiveView('request')}
+              className={`px-3 py-1 text-sm font-medium ${
+                activeView === 'request'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Request Editor
+            </button>
+            <button
+              onClick={() => setActiveView('test')}
+              className={`px-3 py-1 text-sm font-medium ${
+                activeView === 'test'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Test Runner
+            </button>
+          </div>
         </div>
 
-        {/* Request/Response area */}
+        {/* Main content area */}
         <div className="flex-grow flex flex-col">
-          {/* Request editor */}
-          <div className={`${showResponse ? 'h-1/2' : 'h-full'} bg-white border-b border-gray-200 overflow-hidden`}>
-            <RequestEditor />
-          </div>
+          {activeView === 'request' ? (
+            <>
+              {/* Request editor */}
+              <div className={`${showResponse ? 'h-1/2' : 'h-full'} bg-white border-b border-gray-200 overflow-hidden`}>
+                <RequestEditor />
+              </div>
 
-          {/* Response viewer */}
-          {showResponse && (
-            <div className="h-1/2 bg-white flex flex-col overflow-hidden">
-              <div className="flex items-center justify-between p-1 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                <h3 className="font-medium text-gray-700 text-sm">Response</h3>
+              {/* Response viewer */}
+              {showResponse && (
+                <div className="h-1/2 bg-white flex flex-col overflow-hidden">
+                  <div className="flex items-center justify-between p-1 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+                    <h3 className="font-medium text-gray-700 text-sm">Response</h3>
+                    <button
+                      onClick={() => setShowResponse(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                      title="Hide response"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <ResponseViewer />
+                  </div>
+                </div>
+              )}
+
+              {/* Show response button (when hidden) */}
+              {!showResponse && (
                 <button
-                  onClick={() => setShowResponse(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                  title="Hide response"
+                  onClick={() => setShowResponse(true)}
+                  className="fixed bottom-4 right-4 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700"
+                  title="Show response"
                 >
-                  ✕
+                  ↑
                 </button>
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <ResponseViewer />
-              </div>
+              )}
+            </>
+          ) : (
+            /* Test page */
+            <div className="flex-grow bg-white overflow-auto">
+              <TestPage />
             </div>
-          )}
-
-          {/* Show response button (when hidden) */}
-          {!showResponse && (
-            <button
-              onClick={() => setShowResponse(true)}
-              className="fixed bottom-4 right-4 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700"
-              title="Show response"
-            >
-              ↑
-            </button>
           )}
 
           {/* Console toggle button */}

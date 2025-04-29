@@ -107,6 +107,61 @@ export const CollectionProvider = ({ children }) => {
     setActiveRequest(request);
   };
 
+  // Update a request in a collection
+  const updateRequest = (collectionId, requestId, updatedRequest) => {
+    // Find the collection
+    const collectionIndex = collections.findIndex(c => c.info._postman_id === collectionId);
+    if (collectionIndex === -1) {
+      console.error(`Collection with ID ${collectionId} not found`);
+      return false;
+    }
+
+    // Create a deep copy of the collection
+    const updatedCollections = [...collections];
+    const collection = JSON.parse(JSON.stringify(updatedCollections[collectionIndex]));
+
+    // Recursive function to find and update the request
+    const updateRequestInItems = (items) => {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+
+        // Check if this is the request we're looking for
+        if (item.id === requestId || (item.name === updatedRequest.name && !item.item)) {
+          // Update the request
+          items[i] = updatedRequest;
+          return true;
+        }
+
+        // If this is a folder, search its items
+        if (item.item) {
+          const found = updateRequestInItems(item.item);
+          if (found) return true;
+        }
+      }
+
+      return false;
+    };
+
+    // Try to update the request
+    const updated = updateRequestInItems(collection.item);
+
+    if (updated) {
+      // Update the collection in the state
+      updatedCollections[collectionIndex] = collection;
+      setCollections(updatedCollections);
+
+      // If this is the active request, update it too
+      if (activeRequest && (activeRequest.id === requestId || activeRequest.name === updatedRequest.name)) {
+        setActiveRequest(updatedRequest);
+      }
+
+      return true;
+    }
+
+    console.error(`Request with ID ${requestId} not found in collection ${collectionId}`);
+    return false;
+  };
+
   return (
     <CollectionContext.Provider
       value={{
@@ -116,7 +171,8 @@ export const CollectionProvider = ({ children }) => {
         importCollection,
         removeCollection,
         selectCollection,
-        selectRequest
+        selectRequest,
+        updateRequest
       }}
     >
       {children}

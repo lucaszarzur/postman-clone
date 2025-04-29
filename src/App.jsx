@@ -3,6 +3,7 @@ import { EnvironmentProvider } from './contexts/EnvironmentContext';
 import { AuthProvider } from './components/Auth/AuthManager';
 import { ConsoleProvider } from './contexts/ConsoleContext';
 import { ResponsePopupProvider } from './contexts/ResponsePopupContext';
+import { TestProvider } from './contexts/TestContext';
 import Layout from './components/common/Layout';
 
 function App() {
@@ -11,9 +12,11 @@ function App() {
       <ConsoleProvider>
         <CollectionProvider>
           <EnvironmentProvider>
-            <ResponsePopupProvider>
-              <Layout />
-            </ResponsePopupProvider>
+            <TestProvider>
+              <ResponsePopupProvider>
+                <Layout />
+              </ResponsePopupProvider>
+            </TestProvider>
           </EnvironmentProvider>
         </CollectionProvider>
       </ConsoleProvider>
