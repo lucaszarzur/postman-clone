@@ -6,6 +6,7 @@ import ParameterForm from './ParameterForm';
 import TestResults from './TestResults';
 import GlobalAuthSettings from '../Auth/GlobalAuthSettings';
 import RequestList from './RequestList';
+import { ConsoleButton } from '../Console';
 import { toast } from 'react-toastify';
 
 const TestPage = () => {
@@ -391,6 +392,11 @@ const TestPage = () => {
       )}
 
       <TestResults />
+
+      {/* Console Button */}
+      <div className="mt-4 border-t pt-4 flex justify-start">
+        <ConsoleButton />
+      </div>
     </div>
   );
 };

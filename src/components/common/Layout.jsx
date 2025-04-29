@@ -6,8 +6,7 @@ import EnvironmentSelector from '../Environment/EnvironmentSelector';
 import EnvironmentVariables from '../Environment/EnvironmentVariables';
 import RequestEditor from '../Request/RequestEditor';
 import ResponseViewer from '../Response/ResponseViewer';
-import ConsoleViewer from '../Console/ConsoleViewer';
-import ConsoleToggle from '../Console/ConsoleToggle';
+import { Console, ConsoleButton } from '../Console';
 import Welcome from './Welcome';
 import TestPage from '../Test/TestPage';
 
@@ -157,15 +156,11 @@ const Layout = () => {
             </div>
           )}
 
-          {/* Console toggle button */}
-          <div className="absolute bottom-4 left-4 z-10">
-            <ConsoleToggle />
-          </div>
-
-          {/* Console viewer */}
-          <ConsoleViewer />
         </div>
       </div>
+
+      {/* Console */}
+      <Console />
     </div>
   );
 };
