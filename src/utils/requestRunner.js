@@ -64,34 +64,102 @@ export const replaceVariables = (str, getVariable) => {
  * @param {Object} context - The context object with request and environment data
  */
 export const runPreRequestScript = (script, context) => {
-  if (!script) return;
+  if (!script) {
+    console.log('No pre-request script to execute');
+    return;
+  }
+
+  console.log('Executing pre-request script with context:', {
+    hasSetEnvironmentVariable: !!context.setEnvironmentVariable,
+    hasSetGlobalVariable: !!context.setGlobalVariable,
+    hasGetVariable: !!context.getVariable,
+    hasRequest: !!context.request,
+    requestMethod: context.request?.method,
+    requestUrl: context.request?.url
+  });
 
   try {
+    // Track environment variables that are set during script execution
+    const setEnvironmentVariables = [];
+    const setGlobalVariables = [];
+
     // Create a pm object similar to Postman's
     const pm = {
       environment: {
-        set: context.setEnvironmentVariable,
-        get: context.getVariable
+        set: (key, value) => {
+          setEnvironmentVariables.push({ key, value });
+          if (context.setEnvironmentVariable) {
+            context.setEnvironmentVariable(key, value);
+            console.log(`Pre-request script set environment variable: ${key} = ${value}`);
+          }
+        },
+        get: (key) => {
+          const value = context.getVariable ? context.getVariable(key) : null;
+          console.log(`Pre-request script get environment variable: ${key} = ${value}`);
+          return value;
+        }
       },
       globals: {
-        set: context.setGlobalVariable,
+        set: (key, value) => {
+          setGlobalVariables.push({ key, value });
+          if (context.setGlobalVariable) {
+            context.setGlobalVariable(key, value);
+            console.log(`Pre-request script set global variable: ${key} = ${value}`);
+          }
+        },
         get: context.getVariable
       },
       variables: {
         get: context.getVariable
       },
       request: {
-        url: context.request.url,
-        method: context.request.method,
-        headers: context.request.headers,
-        body: context.request.data
+        url: context.request?.url,
+        method: context.request?.method,
+        headers: context.request?.headers,
+        body: context.request?.body || context.request?.data,
+        // Add raw body access similar to test scripts
+        get raw() {
+          try {
+            if (!context.request || !context.request.body) {
+              return '{}';
+            }
+            if (context.request.body.raw) {
+              return context.request.body.raw;
+            }
+            if (context.request.body.mode === 'raw') {
+              return context.request.body.raw || '{}';
+            }
+            return JSON.stringify(context.request.body || {});
+          } catch (error) {
+            console.error('Error accessing request.body.raw in pre-request script:', error);
+            return '{}';
+          }
+        }
       }
     };
 
     // Execute the script
+    console.log('Executing pre-request script:', script.substring(0, 200) + (script.length > 200 ? '...' : ''));
     new Function('pm', script)(pm);
+
+    // Log variables that were set
+    if (setEnvironmentVariables.length > 0) {
+      console.log('Pre-request script set environment variables:', setEnvironmentVariables);
+    }
+    if (setGlobalVariables.length > 0) {
+      console.log('Pre-request script set global variables:', setGlobalVariables);
+    }
+
+    return {
+      environmentVariables: setEnvironmentVariables,
+      globalVariables: setGlobalVariables
+    };
   } catch (error) {
     console.error('Error in pre-request script:', error);
+    console.error('Script that caused the error:', script);
+    return {
+      error: error.message
+    };
   }
 };
 
@@ -109,17 +177,46 @@ export const sendRequest = async (requestData, context) => {
     const logger = context?.logger;
 
     // Process pre-request script if available
+    let preRequestResults = null;
     if (requestData.event) {
       const preRequestEvent = requestData.event.find(e => e.listen === 'prerequest');
       if (preRequestEvent && preRequestEvent.script) {
-        const script = Array.isArray(preRequestEvent.script.exec)
-          ? preRequestEvent.script.exec.join('\\n')
-          : preRequestEvent.script.exec;
+        // Corrigir o problema com as quebras de linha
+        let script;
+        if (Array.isArray(preRequestEvent.script.exec)) {
+          script = preRequestEvent.script.exec.join('\n');
+        } else {
+          // Se não for um array, pode ser uma string com \n literais
+          script = preRequestEvent.script.exec;
+          // Substituir \n literais por quebras de linha reais
+          script = script.replace(/\\n/g, '\n');
+        }
 
-        runPreRequestScript(script, {
+        console.log('Pre-request script to execute:', {
+          scriptLength: script.length,
+          scriptPreview: script.substring(0, 100) + (script.length > 100 ? '...' : ''),
+          containsLiteralNewlines: script.includes('\\n')
+        });
+
+        preRequestResults = runPreRequestScript(script, {
           ...context,
           request: requestData
         });
+
+        // Log the results of the pre-request script
+        if (preRequestResults) {
+          console.log('Pre-request script execution results:', {
+            hasError: !!preRequestResults.error,
+            error: preRequestResults.error,
+            environmentVariablesSet: preRequestResults.environmentVariables?.length || 0,
+            globalVariablesSet: preRequestResults.globalVariables?.length || 0
+          });
+
+          // If there was an error, log it
+          if (preRequestResults.error && logger) {
+            logger(LOG_TYPES.ERROR, `Pre-request script error: ${preRequestResults.error}`);
+          }
+        }
       }
     }
 
@@ -550,7 +647,8 @@ export const sendRequest = async (requestData, context) => {
 
     return {
       ...response,
-      testResults
+      testResults,
+      preRequestResults
     };
   } catch (error) {
     console.error('Request error:', error);
@@ -575,6 +673,7 @@ export const sendRequest = async (requestData, context) => {
       data: error.response?.data || null,
       headers: error.response?.headers || {},
       testResults: null,
+      preRequestResults: preRequestResults, // Include pre-request script results
       config: error.config || {},
       // Adicionar informações extras para depuração
       errorDetails: {
