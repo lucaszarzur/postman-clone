@@ -70,8 +70,15 @@ const TestPage = () => {
             eventDetails: item.event
           });
 
-          // Gerar um ID consistente para a requisição
-          const requestId = item.id || `request-${item.name.replace(/\s+/g, '-').toLowerCase()}`;
+          // Gerar um ID consistente para a requisição, incluindo o caminho para garantir unicidade
+          const requestId = item.id || `request-${itemPath.replace(/\s+/g, '-').toLowerCase()}`;
+
+          // Log para depuração dos IDs gerados
+          console.log('Generated request ID:', {
+            name: item.name,
+            path: itemPath,
+            id: requestId
+          });
 
           result.push({
             id: requestId,
