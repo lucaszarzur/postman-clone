@@ -89,6 +89,15 @@ export const ConsoleProvider = ({ children }) => {
     return addLog(LOG_TYPES.WARNING, message, details);
   }, [addLog]);
 
+  // Função genérica de log para uso externo
+  const log = useCallback((type, message, details = null) => {
+    if (!Object.values(LOG_TYPES).includes(type)) {
+      console.warn(`Invalid log type: ${type}`);
+      type = LOG_TYPES.INFO;
+    }
+    return addLog(type, message, details);
+  }, [addLog]);
+
   return (
     <ConsoleContext.Provider
       value={{
@@ -106,7 +115,8 @@ export const ConsoleProvider = ({ children }) => {
         logRequest,
         logResponse,
         logError,
-        logWarning
+        logWarning,
+        log // Adicionar a função genérica de log
       }}
     >
       {children}

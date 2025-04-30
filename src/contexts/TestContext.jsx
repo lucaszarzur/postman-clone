@@ -20,7 +20,6 @@ export const TestProvider = ({ children }) => {
 
   // Use refs to control test execution flow
   const pauseRef = useRef(false);
-  const abortControllerRef = useRef(null);
 
   const { getVariable, setEnvironmentVariable, setGlobalVariable } = useEnvironment();
   const { log } = useConsole();
@@ -194,8 +193,7 @@ export const TestProvider = ({ children }) => {
           });
         }
 
-        // Log the test being run
-        if (log) log(LOG_TYPES.INFO, `Running test with origin: ${param.origin}, destination: ${param.destination}`);
+        // Removido log de execução de teste para evitar poluição do console
 
         // Log the request details for debugging
         console.log('Sending request with parameters:', {
@@ -253,13 +251,72 @@ export const TestProvider = ({ children }) => {
           return value;
         };
 
-        // Send the request
+        // Log request to console
+        if (log) {
+          // Formatar o corpo da requisição para exibição
+          let formattedBody = request.body;
+
+          // Se o corpo for um objeto, formatá-lo como JSON
+          if (request.body && typeof request.body === 'object') {
+            // Se for modo raw, extrair o conteúdo raw
+            if (request.body.mode === 'raw' && request.body.raw) {
+              formattedBody = request.body.raw;
+            } else {
+              // Caso contrário, converter o objeto para JSON
+              try {
+                formattedBody = JSON.stringify(request.body);
+              } catch (e) {
+                console.error('Erro ao converter corpo da requisição para JSON:', e);
+                formattedBody = '[Erro ao formatar corpo da requisição]';
+              }
+            }
+          }
+
+          // Formatar a URL corretamente
+          let formattedUrl = request.url;
+          if (request.url && typeof request.url === 'object') {
+            if (request.url.raw) {
+              formattedUrl = request.url.raw;
+            } else {
+              try {
+                formattedUrl = JSON.stringify(request.url);
+              } catch (e) {
+                console.error('Erro ao converter URL para string:', e);
+                formattedUrl = '[Erro ao formatar URL]';
+              }
+            }
+          }
+
+          log(LOG_TYPES.REQUEST, `${request.method.toUpperCase()} ${formattedUrl}`, {
+            method: request.method,
+            url: formattedUrl,
+            headers: request.header,
+            body: formattedBody,
+            parameters: { ...param }
+          });
+        }
+
+        // Send the request - pass skipLogging=true to avoid duplicate logs
         const response = await sendRequest(request, {
           getVariable: getTestVariable,
           setEnvironmentVariable: setEnvironmentVariable || (() => {}),
           setGlobalVariable: setGlobalVariable || (() => {}),
-          logger: log || (() => {})
+          logger: log || (() => {}),
+          skipLogging: true // Evitar logs duplicados
         });
+
+        // Log response to console
+        if (log) {
+          const logType = response.status >= 400 ? LOG_TYPES.ERROR : LOG_TYPES.RESPONSE;
+          log(logType, `${response.status} ${response.statusText || ''} (${response.responseTime || 0}ms)`, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+            data: response.data,
+            responseTime: response.responseTime,
+            size: response.data ? JSON.stringify(response.data).length : 0
+          });
+        }
 
         // Add to results
         newResults.push({
@@ -444,6 +501,7 @@ export const TestProvider = ({ children }) => {
           });
         }
 
+        // Adicionar um log mais informativo para a sequência
         if (log) log(LOG_TYPES.INFO, `Running sequence with origin: ${param.origin}, destination: ${param.destination}`);
 
         // Execute requests in sequence
@@ -484,7 +542,7 @@ export const TestProvider = ({ children }) => {
             events: requestData.event
           });
 
-          if (log) log(LOG_TYPES.INFO, `Executing request ${reqIndex + 1}/${requests.length}: ${requestData.name}`);
+          // Removido log de execução de requisição para evitar poluição do console
 
           // Log the request details for debugging
           console.log('Sending request in sequence:', {
@@ -507,8 +565,12 @@ export const TestProvider = ({ children }) => {
           const userValue = getVariable && getVariable('user');
           const passwordValue = getVariable && getVariable('password');
 
-          // Force global auth if credentials exist, even if not explicitly enabled
-          const shouldUseGlobalAuth = enableGlobalAuth || (!!userValue && !!passwordValue);
+          // Log authentication info
+          console.log('Authentication info for request:', {
+            globalAuthEnabled: enableGlobalAuth,
+            userSet: !!userValue,
+            passwordSet: !!passwordValue
+          });
 
           // Log the full request object before sending
           console.log('Full request object being sent:', {
@@ -593,13 +655,72 @@ export const TestProvider = ({ children }) => {
             return false;
           };
 
-          // Send the request
+          // Log request to console
+          if (log) {
+            // Formatar o corpo da requisição para exibição
+            let formattedBody = request.body;
+
+            // Se o corpo for um objeto, formatá-lo como JSON
+            if (request.body && typeof request.body === 'object') {
+              // Se for modo raw, extrair o conteúdo raw
+              if (request.body.mode === 'raw' && request.body.raw) {
+                formattedBody = request.body.raw;
+              } else {
+                // Caso contrário, converter o objeto para JSON
+                try {
+                  formattedBody = JSON.stringify(request.body);
+                } catch (e) {
+                  console.error('Erro ao converter corpo da requisição para JSON:', e);
+                  formattedBody = '[Erro ao formatar corpo da requisição]';
+                }
+              }
+            }
+
+            // Formatar a URL corretamente
+            let formattedUrl = request.url;
+            if (request.url && typeof request.url === 'object') {
+              if (request.url.raw) {
+                formattedUrl = request.url.raw;
+              } else {
+                try {
+                  formattedUrl = JSON.stringify(request.url);
+                } catch (e) {
+                  console.error('Erro ao converter URL para string:', e);
+                  formattedUrl = '[Erro ao formatar URL]';
+                }
+              }
+            }
+
+            log(LOG_TYPES.REQUEST, `${request.method.toUpperCase()} ${formattedUrl}`, {
+              method: request.method,
+              url: formattedUrl,
+              headers: request.header,
+              body: formattedBody,
+              parameters: { ...param }
+            });
+          }
+
+          // Send the request - pass skipLogging=true to avoid duplicate logs
           const response = await sendRequest(request, {
             getVariable: getUpdatedVariable,
             setEnvironmentVariable: setUpdatedEnvironmentVariable,
             setGlobalVariable: setGlobalVariable || (() => {}),
-            logger: log || (() => {})
+            logger: log || (() => {}),
+            skipLogging: true // Evitar logs duplicados
           });
+
+          // Log response to console
+          if (log) {
+            const logType = response.status >= 400 ? LOG_TYPES.ERROR : LOG_TYPES.RESPONSE;
+            log(logType, `${response.status} ${response.statusText || ''} (${response.responseTime || 0}ms)`, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers,
+              data: response.data,
+              responseTime: response.responseTime,
+              size: response.data ? JSON.stringify(response.data).length : 0
+            });
+          }
 
           // Add to results
           newResults.push({

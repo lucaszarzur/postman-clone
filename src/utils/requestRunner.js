@@ -239,8 +239,8 @@ export const sendRequest = async (requestData, context) => {
     url = proxyUrl(url);
     console.log(`Usando proxy: ${originalUrl} -> ${url}`);
 
-    // Registrar a requisição no console
-    if (logger) {
+    // Registrar a requisição no console (se skipLogging não estiver ativado)
+    if (logger && context.skipLogging !== true) {
       logger(LOG_TYPES.REQUEST, `${requestData.method} ${originalUrl}`, {
         method: requestData.method,
         url: originalUrl,
@@ -478,8 +478,8 @@ export const sendRequest = async (requestData, context) => {
     const endTime = Date.now();
     response.responseTime = endTime - startTime;
 
-    // Registrar a resposta no console
-    if (logger) {
+    // Registrar a resposta no console (se skipLogging não estiver ativado)
+    if (logger && context.skipLogging !== true) {
       const logType = response.status >= 400 ? LOG_TYPES.ERROR : LOG_TYPES.RESPONSE;
       logger(logType, `${response.status} ${response.statusText || ''} (${response.responseTime}ms)`, {
         status: response.status,
@@ -653,8 +653,8 @@ export const sendRequest = async (requestData, context) => {
   } catch (error) {
     console.error('Request error:', error);
 
-    // Registrar o erro no console
-    if (context && context.logger) {
+    // Registrar o erro no console (se skipLogging não estiver ativado)
+    if (context && context.logger && context.skipLogging !== true) {
       context.logger(LOG_TYPES.ERROR, `Error: ${error.message}`, {
         name: error.name,
         message: error.message,
