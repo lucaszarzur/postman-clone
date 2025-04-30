@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useCollection } from '../../hooks/useCollection';
+import { useEnvironment } from '../../hooks/useEnvironment';
 import CollectionList from '../Collection/CollectionList';
 import CollectionImporter from '../Collection/CollectionImporter';
 import EnvironmentImporter from '../Environment/EnvironmentImporter';
@@ -11,9 +13,14 @@ import Welcome from './Welcome';
 import TestPage from '../Test/TestPage';
 
 const Layout = () => {
+  const { collections } = useCollection();
+  const { environments } = useEnvironment();
   const [sidebarTab, setSidebarTab] = useState('collections');
   const [showResponse, setShowResponse] = useState(true);
   const [activeView, setActiveView] = useState('request'); // 'request' or 'test'
+
+  // Verificar se deve exibir o console (não exibir na tela de boas-vindas)
+  const shouldShowConsole = collections.length > 0 || environments.length > 0;
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -159,8 +166,8 @@ const Layout = () => {
         </div>
       </div>
 
-      {/* Console */}
-      <Console />
+      {/* Console - só exibir quando não estiver na tela de boas-vindas */}
+      {shouldShowConsole && <Console />}
     </div>
   );
 };

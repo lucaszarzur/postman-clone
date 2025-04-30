@@ -4,6 +4,7 @@ import { useEnvironment } from '../../hooks/useEnvironment';
 import { parseCollectionFile } from '../../utils/collectionParser';
 import { parseEnvironmentFile } from '../../utils/environmentParser';
 import Spinner from './Spinner';
+import { FaCloud, FaFlask, FaLock, FaTerminal, FaExchangeAlt, FaList, FaCode } from 'react-icons/fa';
 
 const Welcome = () => {
   const { collections, importCollection } = useCollection();
@@ -64,15 +65,94 @@ const Welcome = () => {
 
         <div className="mb-6">
           <p className="text-gray-600 mb-4">
-            This is a web-based alternative to Postman, allowing you to:
+            This is a web-based alternative to Postman, with powerful features for API testing and development:
           </p>
 
-          <ul className="list-disc pl-6 space-y-2 text-gray-600">
-            <li>Import and manage Postman collections</li>
-            <li>Import and manage Postman environments</li>
-            <li>Execute API requests with pre-request and test scripts</li>
-            <li>Manage environment variables that can be populated by tests</li>
-          </ul>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {/* API Collections & Environments */}
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+              <h3 className="text-lg font-semibold text-blue-700 mb-2 flex items-center">
+                <FaCloud className="mr-2" /> Collections & Environments
+              </h3>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-start">
+                  <span className="text-blue-500 mr-2">•</span>
+                  Import and manage Postman collections
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-500 mr-2">•</span>
+                  Import and manage Postman environments
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-500 mr-2">•</span>
+                  Environment variable management
+                </li>
+              </ul>
+            </div>
+
+            {/* API Testing */}
+            <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+              <h3 className="text-lg font-semibold text-green-700 mb-2 flex items-center">
+                <FaFlask className="mr-2" /> API Testing
+              </h3>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">•</span>
+                  Run test sequences with multiple parameters
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">•</span>
+                  Bulk add test parameters with semicolon-separated format
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-2">•</span>
+                  Sequential API request execution
+                </li>
+              </ul>
+            </div>
+
+            {/* Authentication */}
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+              <h3 className="text-lg font-semibold text-purple-700 mb-2 flex items-center">
+                <FaLock className="mr-2" /> Authentication
+              </h3>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">•</span>
+                  Global authentication with username/password
+                </li>
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">•</span>
+                  Variable substitution with {'{{'}'user{'}}'} and {'{{'}'password{'}}'}
+                </li>
+                <li className="flex items-start">
+                  <span className="text-purple-500 mr-2">•</span>
+                  Auto-fill from environment variables
+                </li>
+              </ul>
+            </div>
+
+            {/* Scripting & Debugging */}
+            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+              <h3 className="text-lg font-semibold text-yellow-700 mb-2 flex items-center">
+                <FaCode className="mr-2" /> Scripting & Debugging
+              </h3>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-start">
+                  <span className="text-yellow-500 mr-2">•</span>
+                  Pre-request scripts for request modification
+                </li>
+                <li className="flex items-start">
+                  <span className="text-yellow-500 mr-2">•</span>
+                  Test scripts with Chai assertion library
+                </li>
+                <li className="flex items-start">
+                  <span className="text-yellow-500 mr-2">•</span>
+                  Console for request/response logging
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div className="mb-6">
@@ -111,10 +191,35 @@ const Welcome = () => {
           )}
         </div>
 
-        <div className="text-sm text-gray-500">
-          <p>
-            Note: This application runs entirely in your browser. Your collections and environments are stored in your browser's local storage.
-          </p>
+        <div className="border-t border-gray-200 pt-4 mt-4">
+          <div className="flex flex-col md:flex-row md:justify-between text-sm text-gray-500">
+            <div className="mb-4 md:mb-0">
+              <h3 className="font-medium text-gray-700 mb-2">About This Application</h3>
+              <p className="mb-2">
+                This application runs entirely in your browser. Your collections, environments, and test data are stored in your browser's local storage.
+              </p>
+              <p>
+                The application includes a proxy server to handle CORS issues and provide authentication support for your API requests.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium text-gray-700 mb-2">Quick Tips</h3>
+              <ul className="space-y-1">
+                <li className="flex items-center">
+                  <FaTerminal className="text-gray-400 mr-2" size={14} />
+                  Use the console to debug requests and responses
+                </li>
+                <li className="flex items-center">
+                  <FaExchangeAlt className="text-gray-400 mr-2" size={14} />
+                  Switch between Request Editor and Test Runner modes
+                </li>
+                <li className="flex items-center">
+                  <FaList className="text-gray-400 mr-2" size={14} />
+                  Organize your requests in collections for easier testing
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

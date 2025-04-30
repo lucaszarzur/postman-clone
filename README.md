@@ -1,16 +1,34 @@
 # Postman Clone
 
-A web-based alternative to Postman with support for collections, environments, and test scripts.
+A powerful web-based alternative to Postman with advanced support for API collections, environments, authentication, and automated testing.
 
 ## Features
 
-- Import Postman collections
-- Import Postman environments
-- Execute API requests with variable substitution
-- Run pre-request scripts
-- Run test scripts that can populate environment variables
-- View and manage environment variables
-- View test results
+### Collections & Environments
+- Import and manage Postman collections
+- Import and manage Postman environments
+- Environment variable management with global and environment-specific variables
+- CSV export of test results
+
+### API Testing
+- Run test sequences with multiple parameter sets
+- Bulk add test parameters with semicolon-separated format
+- Sequential API request execution with dependency chains
+- Disable specific requests in test sequences
+- Visual separation between completed test sequences
+- Stop and continue functionality for test runs
+
+### Authentication
+- Global authentication with username/password variables
+- Variable substitution with {{user}} and {{password}} in requests
+- Auto-fill authentication from environment variables
+- Authentication support in both request editor and test runner
+
+### Scripting & Debugging
+- Pre-request scripts for request modification
+- Test scripts with Chai assertion library
+- Console component for request/response logging
+- Detailed request body information in API call details
 
 ## Getting Started
 
@@ -71,11 +89,69 @@ npm run dev
 3. Use variables in your requests with the `{{variableName}}` syntax
 4. View and edit variables in the Environments tab
 
-### Running Tests
+### Authentication
+
+The application supports global authentication that can be applied to all requests:
+
+1. In the Test Runner, find the Authentication section
+2. Enable global authentication by checking the checkbox
+3. Enter your username and password
+4. Use `{{user}}` and `{{password}}` variables in your requests
+
+Authentication options:
+
+- **Auto-fill**: Automatically fill username and password fields from environment variables
+- **Default values**: Use default values (admin/admin) for quick testing
+- **Environment variables**: Authentication credentials can be stored in environment variables
+- **Global variables**: Authentication settings apply to both request editor and test runner
+
+### Running Tests in Request Editor
 
 1. Add test scripts to your requests
 2. Send the request
 3. View test results in the "Tests" tab of the response panel
+
+### Using the Test Runner
+
+1. Switch to the Test Runner mode using the toggle at the top of the application
+2. Select a collection from the dropdown
+3. Add test parameters:
+   - Click "Add Parameter Set" to add individual parameter sets
+   - Or use "Bulk Add" to paste multiple origin/destination pairs in semicolon-separated format (e.g., "14199;3155")
+4. Configure which requests to include in the test sequence by toggling them on/off
+5. Click "Run Collection" to execute the test sequence with all parameter sets
+6. View the test results in the results panel
+
+#### Test Parameters
+
+The Test Runner supports adding multiple parameter sets to run the same collection with different input values:
+
+- Parameters must be numeric IDs when used for origin/destination pairs
+- Each parameter set creates a separate test run
+- When using bulk add, use the format `origin;destination` with one pair per line
+- You can enable/disable specific parameter sets
+
+#### Test Sequence Execution
+
+When running a collection:
+
+1. Requests are executed in sequence
+2. Each request waits for the previous one to complete
+3. Pre-request scripts are executed before each request
+4. Test scripts are executed after each request
+5. Environment variables set by test scripts are available to subsequent requests
+6. If a request fails, the sequence continues with the next request
+7. If a specific error condition is met (like empty services), only that parameter set is stopped
+
+### Using the Console
+
+The console provides detailed logging of all API requests and responses:
+
+1. Click the "Console" button at the bottom of the screen to open the console
+2. View request and response details, including headers, body, and timing information
+3. Filter logs by type (info, request, response, error, warning)
+4. Search logs using the search box
+5. Clear logs using the trash icon
 
 ## Running in Production
 
@@ -112,6 +188,26 @@ You can set these variables in a `.env` file in the root of the project.
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 - [Axios](https://axios-http.com/) - HTTP client
 - [Express](https://expressjs.com/) - Used for the proxy server
+- [Chai](https://www.chaijs.com/) - Assertion library for tests
+- [React Icons](https://react-icons.github.io/react-icons/) - Icon library
+- [React Toastify](https://fkhadra.github.io/react-toastify/) - Toast notifications
+
+## Contributing
+
+Contributions are welcome! Here are some ways you can contribute:
+
+1. Report bugs and issues
+2. Suggest new features
+3. Submit pull requests with improvements
+4. Improve documentation
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
@@ -120,3 +216,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Inspired by [Postman](https://www.postman.com/)
+- Thanks to all contributors who have helped improve this project
